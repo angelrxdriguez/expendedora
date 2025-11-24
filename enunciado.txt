@@ -1,0 +1,11 @@
+PRACTICA ORTO
+
+-Acotar que monedas se pueden poner ( +5 cent )
+-Billetes ( 5, 10 y 20 )
+-Dar cambio( solo en monedas ) y si no hay avisar que no hay cambio al meter el biellete ( escupir el biellete un botón para las monedas )
+-Se puede abrir maquina ( reponer, cambiar precios, quitar dinero, cambiar artículos ) hacer como una llave en la maquina la cual le cliques
+y te lleve a otra pestaña con un menú facil
+-Avisar que no hay artículos
+-Los avisos que aparezcan en la maquina no un popup
+
+

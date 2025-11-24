@@ -1,0 +1,44 @@
+body{
+    background-color: rgb(232, 232, 232);
+    color: black;
+ font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.maquina{
+    width: 80%;
+    margin-left: 10%;
+}
+.banner{
+    text-align: center;
+    width: 50%;
+    margin-left: 25%;
+    color: rgb(255, 255, 255);
+    background-color: #2c2c2c;
+    margin-top: 1rem;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 3px;
+    height: 100px;
+    margin-bottom: 0;
+}    
+.tit{
+font-size: 1.5rem;
+color: rgb(255, 38, 0);
+}
+.subtit{
+color: rgb(0, 153, 255);
+}
+.expendedora{
+    margin-top: -3%;
+    margin-left: 7.5%;
+    text-align: center;
+    width: 80%;
+    background-color: #202020;
+    height: 600px;
+    border-top-left-radius:20px ;
+    border-top-right-radius:20px ;
+    border-left: 15px solid rgb(0, 153, 255);
+    border-right: 15px solid rgb(255, 38, 0);
+    border-bottom: 20px solid rgb(0, 0, 0);
+}
