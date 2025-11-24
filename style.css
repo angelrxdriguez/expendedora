@@ -30,9 +30,8 @@ color: rgb(255, 38, 0);
 color: rgb(0, 153, 255);
 }
 .expendedora{
-    margin-top: -3%;
-    margin-left: 7.5%;
     text-align: center;
+    margin-left: 10%;
     width: 80%;
     background-color: #202020;
     height: 600px;
@@ -41,4 +40,5 @@ color: rgb(0, 153, 255);
     border-left: 15px solid rgb(0, 153, 255);
     border-right: 15px solid rgb(255, 38, 0);
     border-bottom: 20px solid rgb(0, 0, 0);
+    border-top: 20px solid #202020;
 }
