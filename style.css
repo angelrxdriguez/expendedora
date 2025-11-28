@@ -1,10 +1,10 @@
 body{
     background-color: rgb(232, 232, 232);
     color: black;
- font-family: "Bebas Neue", sans-serif;
+   font-family: "Goldman", sans-serif;
   font-weight: 400;
   font-style: normal;
-  background-image: url(img/graffiti.png);
+  background-image: url(img/tokyo.png);
   background-repeat:auto;
   background-size: cover;
 }
@@ -28,14 +28,15 @@ body{
 .tit{
 font-size: 1.5rem;
 color: rgb(255, 38, 0);
-background-color: white;
-width: 50%;
-margin-left: 25%;
-border-radius: 20px;
+width: 70%;
+margin-left: 15%;
+border-radius: 10px;
+margin-top: 20px;
 }
 .subtit{
 color: rgb(0, 153, 255);
 font-weight: bolder;
+font-size: 1rem;
 }
 .expendedora{
     text-align: center;
@@ -83,7 +84,7 @@ font-weight: bolder;
 .fila1 { grid-area: 1 / 1 / 2 / 3; }
 .fila2 { grid-area: 1 / 3 / 2 / 4; }
 .fila3 { grid-area: 2 / 1 / 5 / 4; }
-.numeros > div{
+.numeros > .fila1, .numeros > .fila2{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -113,4 +114,48 @@ font-weight: bolder;
     color: white;
     font-size: 2rem;
     margin: 0;
+}
+a{
+    text-decoration: none;
+}
+/*boton monedas*/
+.btn-monedas{
+    background-color: rgb(255, 135, 135);
+    border: none;
+    color: black;
+    font-size: 30px;
+    cursor: pointer;
+    margin-right: 50px;
+    border-radius: 7.5px;
+}
+.btn-billete{
+    background-color: rgb(181, 238, 255);
+    border: none;
+    color: black;
+    font-size: 30px;
+    cursor: pointer;
+    border-radius: 7.5px;
+}
+/*numeros*/
+.fila3{
+    background-color: #444;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+.num{
+      font-family: "Press Start 2P", system-ui !important;
+  font-weight: 400;
+}
+.btn-num{
+color: white;
+background-color: #444;
+text-decoration: none;
+}
+.btn-num:hover{
+    background-color: rgb(0, 153, 255);
+    cursor: pointer;
+}
+.btn-num:active{
+    background-color: rgb(136, 207, 255);
 }

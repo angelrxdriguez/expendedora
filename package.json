@@ -1,0 +1,24 @@
+{
+  "name": "expendedora",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angelrxdriguez/expendedora.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/angelrxdriguez/expendedora/issues"
+  },
+  "homepage": "https://github.com/angelrxdriguez/expendedora#readme",
+  "devDependencies": {
+    "electron": "^39.2.3"
+  }
+}
