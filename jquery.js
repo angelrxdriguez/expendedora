@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     const display = document.getElementById("num");
     const limpiar = document.getElementById("num-limpiar");

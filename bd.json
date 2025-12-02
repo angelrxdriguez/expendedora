@@ -1,0 +1,36 @@
+{
+  "nombre": "Jugador",
+  "dinero": 5,
+  "inventario": [
+    {
+      "codigo": "caja",
+      "nombre": "Caja básica",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja1",
+      "nombre": "Caja Común",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja2",
+      "nombre": "Caja Rara",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja3",
+      "nombre": "Caja Épica",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja4",
+      "nombre": "Caja Legendaria",
+      "cantidad": 0
+    }
+  ],
+  "stats": {
+    "cajas_abiertas": 0,
+    "dinero_gastado": 0,
+    "dinero_ganado": 0
+  }
+}
