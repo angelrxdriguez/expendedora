@@ -238,3 +238,10 @@ text-decoration: none;
 .btn-num:active{
     background-color: rgb(136, 207, 255);
 }
+.inventario{
+    background-color: #202020;
+    height: 310px;
+}
+.cofre{
+    width: 8rem;
+}
