@@ -25,4 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
         display.textContent = display.textContent.slice(0, -1);
         if (!display.textContent) display.textContent = "PIDE";
     });
+    //llevar al usuario a menu candado maquina
+    const candadoBtn = document.querySelector(".btn-candado");
+    candadoBtn.addEventListener("click", () => {
+        window.location.href = "maquina.html";
+    });
+
 });
