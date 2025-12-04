@@ -1,0 +1,2 @@
+npm install express mongodb cors dotenv
+npm init -y

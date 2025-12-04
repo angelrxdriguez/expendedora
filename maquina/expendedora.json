@@ -1,0 +1,69 @@
+{
+  "productos": [
+    {
+      "codigo": "caja",
+      "nombre": "Caja básica",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja1",
+      "nombre": "Caja Común",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja2",
+      "nombre": "Caja Rara",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja3",
+      "nombre": "Caja Épica",
+      "cantidad": 0
+    },
+    {
+      "codigo": "caja4",
+      "nombre": "Caja Legendaria",
+      "cantidad": 0
+    }
+  ],
+  "monedas": [
+    {
+      "valor": 0.05,
+      "cantidad": 0
+    },
+    {
+      "valor": 0.10,
+      "cantidad": 0
+    },
+    {
+      "valor": 0.20,
+      "cantidad": 0
+    },
+    {
+      "valor": 0.50,
+      "cantidad": 0
+    },
+    {
+      "valor": 1.00,
+      "cantidad": 0
+    },
+    {
+      "valor": 2.00,
+      "cantidad": 0
+    }
+  ],
+  "billetes": [
+    {
+      "valor": 5,
+      "cantidad": 0
+    },
+    {
+      "valor": 10,
+      "cantidad": 0
+    },
+    {
+      "valor": 20,
+      "cantidad": 0
+    }
+  ]
+}

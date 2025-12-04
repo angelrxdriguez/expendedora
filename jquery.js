@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => agregar(btn.textContent.trim()));
     });
 
-    limpiar.addEventListener("click", () => {
+    limpiar.addEventListener("click", () => { 
         display.textContent = "";
     });
 
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //llevar al usuario a menu candado maquina
     const candadoBtn = document.querySelector(".btn-candado");
     candadoBtn.addEventListener("click", () => {
-        window.location.href = "maquina.html";
+        window.location.href = "./maquina/maquina.html";
     });
 
 });
