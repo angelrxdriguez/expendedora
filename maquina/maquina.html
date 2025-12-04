@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,86 @@
     <link rel="stylesheet" href="maquina.css">
 </head>
 <body>
+    <div class="container my-4">
+        <h1 class="mb-4">Máquina expendedora</h1>
 
+        <div class="row">
+            <!-- Productos -->
+            <div class="col-md-4 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-header">
+                        Productos
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-dark table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Código</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-productos">
+                                <tr>
+                                    <td colspan="3">Cargando productos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monedas -->
+            <div class="col-md-4 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-header">
+                        Monedas
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-dark table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Valor</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-monedas">
+                                <tr>
+                                    <td colspan="2">Cargando monedas...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billetes -->
+            <div class="col-md-4 mb-3">
+                <div class="card bg-dark text-white">
+                    <div class="card-header">
+                        Billetes
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-dark table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Valor</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-billetes">
+                                <tr>
+                                    <td colspan="2">Cargando billetes...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="maquina.js"></script>
 </body>
 </html>

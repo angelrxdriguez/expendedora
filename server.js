@@ -63,3 +63,41 @@ app.post("/usuario/dinero", async (req, res) => {
     res.status(500).json({ error: "Error actualizando dinero" });
   }
 });
+app.get("/maquina/monedas", async (req, res) => {
+  try {
+    const maquina = await db.collection("maquina").findOne({});
+    if (!maquina) {
+      return res.status(404).json({ error: "No se encontró la máquina" });
+    }
+    res.json(maquina.monedas || []);
+  } catch (err) {
+    console.error("Error obteniendo monedas:", err);
+    res.status(500).json({ error: "Error obteniendo monedas" });
+  }
+});
+
+app.get("/maquina/billetes", async (req, res) => {
+  try {
+    const maquina = await db.collection("maquina").findOne({});
+    if (!maquina) {
+      return res.status(404).json({ error: "No se encontró la máquina" });
+    }
+    res.json(maquina.billetes || []);
+  } catch (err) {
+    console.error("Error obteniendo billetes:", err);
+    res.status(500).json({ error: "Error obteniendo billetes" });
+  }
+});
+
+app.get("/maquina/productos", async (req, res) => {
+  try {
+    const maquina = await db.collection("maquina").findOne({});
+    if (!maquina) {
+      return res.status(404).json({ error: "No se encontró la máquina" });
+    }
+    res.json(maquina.productos || []);
+  } catch (err) {
+    console.error("Error obteniendo productos:", err);
+    res.status(500).json({ error: "Error obteniendo productos" });
+  }
+});
