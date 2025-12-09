@@ -65,7 +65,7 @@ app.post("/usuario/dinero", async (req, res) => {
 });
 app.get("/maquina/monedas", async (req, res) => {
   try {
-    const maquina = await db.collection("maquina").findOne({});
+    const maquina = await db.collection("expendedora").findOne({});
     if (!maquina) {
       return res.status(404).json({ error: "No se encontró la máquina" });
     }
@@ -78,7 +78,7 @@ app.get("/maquina/monedas", async (req, res) => {
 
 app.get("/maquina/billetes", async (req, res) => {
   try {
-    const maquina = await db.collection("maquina").findOne({});
+    const maquina = await db.collection("expendedora").findOne({});
     if (!maquina) {
       return res.status(404).json({ error: "No se encontró la máquina" });
     }
@@ -91,7 +91,7 @@ app.get("/maquina/billetes", async (req, res) => {
 
 app.get("/maquina/productos", async (req, res) => {
   try {
-    const maquina = await db.collection("maquina").findOne({});
+    const maquina = await db.collection("expendedora").findOne({});
     if (!maquina) {
       return res.status(404).json({ error: "No se encontró la máquina" });
     }

@@ -1,7 +1,8 @@
 {
-  "nombre": "Jugador",
-  "dinero": 5,
-  "inventario": [
+  "_id": {
+    "$oid": "6931a78f69f5bed1505b448f"
+  },
+  "productos": [
     {
       "codigo": "caja",
       "nombre": "Caja básica",
@@ -28,9 +29,44 @@
       "cantidad": 0
     }
   ],
-  "stats": {
-    "cajas_abiertas": 0,
-    "dinero_gastado": 0,
-    "dinero_ganado": 0
-  }
+  "monedas": [
+    {
+      "valor": 0.05,
+      "cantidad": 0
+    },
+    {
+      "valor": 0.1,
+      "cantidad": 0
+    },
+    {
+      "valor": 0.2,
+      "cantidad": 0
+    },
+    {
+      "valor": 0.5,
+      "cantidad": 0
+    },
+    {
+      "valor": 1,
+      "cantidad": 0
+    },
+    {
+      "valor": 2,
+      "cantidad": 0
+    }
+  ],
+  "billetes": [
+    {
+      "valor": 5,
+      "cantidad": 0
+    },
+    {
+      "valor": 10,
+      "cantidad": 0
+    },
+    {
+      "valor": 20,
+      "cantidad": 0
+    }
+  ]
 }
