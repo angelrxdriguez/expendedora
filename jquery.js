@@ -1,5 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
 var totalmaquina = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
     const display = document.getElementById("num");
     const limpiar = document.getElementById("num-limpiar");
     const borrar = document.getElementById("num-borrar");
@@ -29,6 +30,38 @@ var totalmaquina = 0;
     candadoBtn.addEventListener("click", () => {
         window.location.href = "./maquina/maquina.html";
     });
+
+    // Función para actualizar el display del total en el modal y en el contador
+    function actualizarTotalModal() {
+        const totalDisplay = document.getElementById("total-maquina-modal");
+        if (totalDisplay) {
+            totalDisplay.textContent = totalmaquina.toFixed(2) + "€";
+        }
+        const dineroIngresado = document.querySelector(".dinero-ingresado");
+        if (dineroIngresado) {
+            dineroIngresado.textContent = totalmaquina.toFixed(2) + "€";
+        }
+    }
+
+    // Event listeners para los botones de billetes y monedas del modal
+    document.querySelectorAll(".btn-billete-modal, .btn-moneda-modal").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const valor = parseFloat(btn.getAttribute("data-valor"));
+            totalmaquina += valor;
+            actualizarTotalModal();
+        });
+    });
+
+    // Actualizar el total cuando se abre el modal
+    const modalIngresar = document.getElementById("modalIngresar");
+    if (modalIngresar) {
+        modalIngresar.addEventListener("show.bs.modal", () => {
+            actualizarTotalModal();
+        });
+    }
+
+    // Actualizar el contador inicial al cargar la página
+    actualizarTotalModal();
 
 });
 
