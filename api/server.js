@@ -36,6 +36,17 @@ async function start() {
 }
 
 start();
+//obtener productos de la expendedora
+app.get("/productos", async (req, res) => {
+  try {
+    const productos = await db.collection("expendedora").findOne({});
+    res.json(productos.productos);
+  } catch (err) {
+    console.error("Error obteniendo productos:", err);
+    res.status(500).json({ error: "Error obteniendo productos" });
+  }
+});
+//obtener usuario de la base de datos
 app.get("/usuario", async (req, res) => {
   try {
     const usuario = await db.collection("usuario").findOne({});
@@ -45,7 +56,16 @@ app.get("/usuario", async (req, res) => {
     res.status(500).json({ error: "Error obteniendo usuario" });
   }
 });
-
+//obtener productos del usuario
+app.get("/usuario/productos", async (req, res) => {
+  try {
+    const usuario = await db.collection("usuario").findOne({});
+    res.json(usuario.inventario);
+  } catch (err) {
+    console.error("Error obteniendo productos:", err);
+    res.status(500).json({ error: "Error obteniendo productos" });
+  }
+});
 app.post("/usuario/dinero", async (req, res) => {
   try {
     const { dinero } = req.body;

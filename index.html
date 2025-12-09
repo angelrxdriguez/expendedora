@@ -59,16 +59,11 @@
                     </div>
                 </div>
                 <div class="botones">
-                    <a href="monedas.html">
-                        <button class="btn-monedas">
-                            <img src="res/img/assets/moneda.png" alt="" class="moneda">
-                        </button>
-                    </a>
-                    <a href="billetes.html">
-                        <button class="btn-billete">
-                            <img src="res/img/assets/billete.png" alt="" class="billete">
-                        </button>
-                    </a>
+                    <!--contador de dinero ingresado-->
+                    <div class="dinero-ingresado">0€</div>
+                    <button class="btn-billete" data-bs-toggle="modal" data-bs-target="#modalIngresar">
+                        <img src="res/img/assets/billete.png" alt="" class="billete">
+                    </button>
                 </div>
                 <div class="panel">
                     <div class="numeros">
@@ -132,7 +127,76 @@
             </div>
         </div>
     </div>
+    <!--Modal de ingresar dinero-->
+    <div class="modal fade" id="modalIngresar" tabindex="-1" aria-labelledby="modal-ingresar-dinero-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-ingresar-dinero-label">Ingresar Dinero</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Sección de Billetes -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Billetes</h6>
+                        <div class="d-flex justify-content-around flex-wrap gap-3">
+                            <button type="button" class="btn btn-outline-primary btn-billete-modal" data-valor="5">
+                                <img src="res/img/assets/billete.png" alt="5€" class="img-fluid" style="max-width: 80px;">
+                                <div class="mt-2">5€</div>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-billete-modal" data-valor="10">
+                                <img src="res/img/assets/billete.png" alt="10€" class="img-fluid" style="max-width: 80px;">
+                                <div class="mt-2">10€</div>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-billete-modal" data-valor="20">
+                                <img src="res/img/assets/billete.png" alt="20€" class="img-fluid" style="max-width: 80px;">
+                                <div class="mt-2">20€</div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-3">Monedas</h6>
+                        <div class="d-flex justify-content-around flex-wrap gap-3">
+                            <button type="button" class="btn btn-outline-secondary btn-moneda-modal" data-valor="0.10">
+                                <img src="res/img/assets/moneda.png" alt="10 cent" class="img-fluid" style="max-width: 60px;">
+                                <div class="mt-2">10 cent</div>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-moneda-modal" data-valor="0.20">
+                                <img src="res/img/assets/moneda.png" alt="20 cent" class="img-fluid" style="max-width: 60px;">
+                                <div class="mt-2">20 cent</div>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-moneda-modal" data-valor="0.50">
+                                <img src="res/img/assets/moneda.png" alt="50 cent" class="img-fluid" style="max-width: 60px;">
+                                <div class="mt-2">50 cent</div>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-moneda-modal" data-valor="1">
+                                <img src="res/img/assets/moneda.png" alt="1€" class="img-fluid" style="max-width: 60px;">
+                                <div class="mt-2">1€</div>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-moneda-modal" data-valor="2">
+                                <img src="res/img/assets/moneda.png" alt="2€" class="img-fluid" style="max-width: 60px;">
+                                <div class="mt-2">2€</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="jquery.js"></script>
+    <script>
+        //modal de ingresar dinero
+        const btnIngresar = document.getElementById('btnIngresar');
+        btnIngresar.addEventListener('click', () => {
+            modalIngresar.show();
+        });
+    </script>
 </body>
 
 </html>
