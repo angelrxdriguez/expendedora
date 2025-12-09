@@ -1,6 +1,17 @@
 body {
-    background-color: #232323;
     color: white;
+    background-color: #171717;
+    font-family: "Press Start 2P", system-ui !important;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.9rem;
+    background: url(img/fondo.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-blend-mode: overlay;
+    background-blend-mode: overlay;
 }
 
 h1 {

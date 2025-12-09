@@ -40,7 +40,7 @@ function cargarProductos() {
                 tdCantidad.textContent = producto.cantidad;
 
                 fila.appendChild(tdNombre);
-                fila.appendChild(tdCodigo);
+            //    fila.appendChild(tdCodigo);
                 fila.appendChild(tdCantidad);
 
                 tbody.appendChild(fila);
