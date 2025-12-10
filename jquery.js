@@ -1,4 +1,5 @@
 var totalmaquina = 0;
+const API_URL = "http://localhost:3000";
 
 document.addEventListener("DOMContentLoaded", () => {
     const display = document.getElementById("num");
@@ -43,12 +44,43 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Event listeners para los botones de billetes y monedas del modal
-    document.querySelectorAll(".btn-billete-modal, .btn-moneda-modal").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const valor = parseFloat(btn.getAttribute("data-valor"));
+    function guardarDineroEnMaquina(tipo, valor) {
+        const endpoint = tipo === "billete"
+            ? "/maquina/billetes/actualizar"
+            : "/maquina/monedas/actualizar";
+
+        fetch(API_URL + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ valor: valor, cantidad: 1 })
+        })
+        .then((resp) => {
+            if (!resp.ok) {
+                throw new Error("No se pudo guardar el " + tipo);
+            }
+            return resp.json();
+        })
+        .then(() => {
             totalmaquina += valor;
             actualizarTotalModal();
+        })
+        .catch((err) => {
+            console.error("Error guardando " + tipo + ":", err);
+        });
+    }
+
+    // Event listeners para los botones de billetes y monedas del modal
+    document.querySelectorAll(".btn-billete-modal").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const valor = parseFloat(btn.getAttribute("data-valor"));
+            guardarDineroEnMaquina("billete", valor);
+        });
+    });
+
+    document.querySelectorAll(".btn-moneda-modal").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const valor = parseFloat(btn.getAttribute("data-valor"));
+            guardarDineroEnMaquina("moneda", valor);
         });
     });
 
@@ -60,9 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
-
-// URL de la API
-const API_URL = "http://localhost:3000";
 
 // Función para actualizar el inventario del usuario
 function actualizarInventario() {
