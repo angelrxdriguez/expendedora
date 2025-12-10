@@ -59,10 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             actualizarTotalModal();
         });
     }
-
-    // Actualizar el contador inicial al cargar la página
-    actualizarTotalModal();
-
 });
 
 // URL de la API

@@ -46,43 +46,6 @@ app.get("/productos", async (req, res) => {
     res.status(500).json({ error: "Error obteniendo productos" });
   }
 });
-//obtener usuario de la base de datos
-app.get("/usuario", async (req, res) => {
-  try {
-    const usuario = await db.collection("usuario").findOne({});
-    res.json(usuario);
-  } catch (err) {
-    console.error("Error obteniendo usuario:", err);
-    res.status(500).json({ error: "Error obteniendo usuario" });
-  }
-});
-//obtener productos del usuario
-app.get("/usuario/productos", async (req, res) => {
-  try {
-    const usuario = await db.collection("usuario").findOne({});
-    res.json(usuario.inventario);
-  } catch (err) {
-    console.error("Error obteniendo productos:", err);
-    res.status(500).json({ error: "Error obteniendo productos" });
-  }
-});
-app.post("/usuario/dinero", async (req, res) => {
-  try {
-    const { dinero } = req.body;
-    if (typeof dinero !== "number") {
-      return res.status(400).json({ error: "dinero debe ser número" });
-    }
-    const result = await db.collection("usuario").updateOne(
-      {}, // solo hay uno
-      { $set: { dinero } }
-    );
-
-    res.json({ ok: true, modifiedCount: result.modifiedCount });
-  } catch (err) {
-    console.error("Error actualizando dinero:", err);
-    res.status(500).json({ error: "Error actualizando dinero" });
-  }
-});
 app.get("/maquina/monedas", async (req, res) => {
   try {
     const maquina = await db.collection("expendedora").findOne({});
