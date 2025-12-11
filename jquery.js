@@ -1,5 +1,12 @@
 var totalmaquina = 0;
 const API_URL = "http://localhost:3000";
+const precios = {
+    "00": 1,
+    "01": 2,
+    "02": 5,
+    "03": 15,
+    "04": 70
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const display = document.getElementById("num");
@@ -44,6 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function mostrarMensaje(texto) {
+        const alerta = document.querySelector(".alerta");
+        if (alerta) {
+            alerta.textContent = texto;
+        } else {
+            console.log(texto);
+        }
+    }
+
     function guardarDineroEnMaquina(tipo, valor) {
         const endpoint = tipo === "billete"
             ? "/maquina/billetes/actualizar"
@@ -69,6 +85,54 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    async function comprarProducto() {
+        const codigo = display.textContent.trim();
+        const precio = precios[codigo];
+
+        if (!codigo || codigo === "PIDE" || typeof precio !== "number") {
+            mostrarMensaje("Introduce un código válido.");
+            return;
+        }
+
+        try {
+            const resProductos = await fetch(API_URL + "/maquina/productos");
+            if (!resProductos.ok) {
+                throw new Error("No se pudieron leer productos");
+            }
+            const productos = await resProductos.json();
+            const producto = productos.find(p => p.codigo === codigo);
+
+            if (!producto || producto.cantidad <= 0) {
+                mostrarMensaje("Producto agotado.");
+                return;
+            }
+
+            if (totalmaquina < precio) {
+                const falta = (precio - totalmaquina).toFixed(2);
+                mostrarMensaje("Faltan " + falta + "€ para comprar.");
+                return;
+            }
+
+            const resActualizar = await fetch(API_URL + "/maquina/productos/actualizar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ codigo: codigo, cantidad: -1 })
+            });
+
+            if (!resActualizar.ok) {
+                throw new Error("No se pudo actualizar la máquina");
+            }
+
+            totalmaquina -= precio;
+            if (totalmaquina < 0) totalmaquina = 0;
+            actualizarTotalModal();
+            mostrarMensaje("Compra realizada con éxito.");
+        } catch (err) {
+            console.error("Error al comprar:", err);
+            mostrarMensaje("Error al comprar, inténtalo de nuevo.");
+        }
+    }
+
     // Event listeners para los botones de billetes y monedas del modal
     document.querySelectorAll(".btn-billete-modal").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -90,6 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
         modalIngresar.addEventListener("show.bs.modal", () => {
             actualizarTotalModal();
         });
+    }
+
+    const comprarBtn = document.querySelector(".btn-comprar");
+    if (comprarBtn) {
+        comprarBtn.addEventListener("click", comprarProducto);
     }
 });
 
