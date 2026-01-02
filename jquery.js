@@ -1,6 +1,6 @@
 var totalmaquina = 0;
-const API_URL = "http://localhost:3000";
-const precios = {
+var API_URL = "http://localhost:3000";
+var precios = {
     "00": 1,
     "01": 2,
     "02": 5,
@@ -8,166 +8,239 @@ const precios = {
     "04": 70
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    const display = document.getElementById("num");
-    const limpiar = document.getElementById("num-limpiar");
-    const borrar = document.getElementById("num-borrar");
-    const numeros = document.querySelectorAll(".btn-num");
 
-    const agregar = (valor) => {
-        if (display.textContent === "PIDE") display.textContent = "";
-        if (display.textContent.length >= 2) return; 
-        display.textContent += valor;
-    };
+function actualizarTotalModal() {
+    var texto = totalmaquina.toFixed(2) + "€";
 
-    numeros.forEach((btn) => {
-        const id = btn.id;
-        if (id === "num-limpiar" || id === "num-borrar") return; 
-        btn.addEventListener("click", () => agregar(btn.textContent.trim()));
-    });
-
-    limpiar.addEventListener("click", () => { 
-        display.textContent = "";
-    });
-
-    borrar.addEventListener("click", () => {
-        display.textContent = display.textContent.slice(0, -1);
-        if (!display.textContent) display.textContent = "PIDE";
-    });
-    const candadoBtn = document.querySelector(".btn-candado");
-    candadoBtn.addEventListener("click", () => {
-        window.location.href = "./maquina/maquina.html";
-    });
-
-    // Función para actualizar el display del total en el modal y en el contador
-    function actualizarTotalModal() {
-        const totalDisplay = document.getElementById("total-maquina-modal");
-        if (totalDisplay) {
-            totalDisplay.textContent = totalmaquina.toFixed(2) + "€";
-        }
-        const dineroIngresado = document.querySelector(".dinero-ingresado");
-        if (dineroIngresado) {
-            dineroIngresado.textContent = totalmaquina.toFixed(2) + "€";
-        }
+    var $total = $("#total-maquina-modal");
+    if ($total.length) {
+        $total.text(texto);
     }
 
-    function mostrarMensaje(texto) {
-        const alerta = document.querySelector(".alerta");
-        if (alerta) {
-            alerta.textContent = texto;
-        } else {
-            console.log(texto);
-        }
+    var $dineroIngresado = $(".dinero-ingresado");
+    if ($dineroIngresado.length) {
+        $dineroIngresado.text(texto);
     }
+}
 
-    function guardarDineroEnMaquina(tipo, valor) {
-        const endpoint = tipo === "billete"
-            ? "/maquina/billetes/actualizar"
-            : "/maquina/monedas/actualizar";
+function mostrarMensaje(texto) {
+    var $alerta = $(".alerta");
+    if ($alerta.length) {
+        $alerta.text(texto);
+    } else {
+        console.log(texto);
+    }
+}
 
-        fetch(API_URL + endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ valor: valor, cantidad: 1 })
-        })
-        .then((resp) => {
-            if (!resp.ok) {
-                throw new Error("No se pudo guardar el " + tipo);
+function actualizarFotosStock() {
+    $.get(API_URL + "/maquina/productos", function (productos) {
+        $(".producto").each(function () {
+            var $card = $(this);
+            var codigo = $.trim($card.find(".codigo").text());
+            var img = $card.find("img")[0];
+
+            if (!codigo || !img) {
+                return;
             }
-            return resp.json();
-        })
-        .then(() => {
+
+            var datos = null;
+            for (var i = 0; i < productos.length; i++) {
+                if (productos[i].codigo === codigo) {
+                    datos = productos[i];
+                    break;
+                }
+            }
+
+            var hayStock = datos && datos.cantidad > 0;
+            img.style.visibility = hayStock ? "visible" : "hidden";
+        });
+    }).fail(function () {
+        console.error("Error mostrando stock");
+    });
+}
+
+function guardarDineroMaquina(tipo, valor) {
+    var endpoint;
+    if (tipo === "billete") {
+        endpoint = "/maquina/billetes/actualizar";
+    } else {
+        endpoint = "/maquina/monedas/actualizar";
+    }
+
+    $.ajax({
+        url: API_URL + endpoint,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ valor: valor, cantidad: 1 }),
+        success: function () {
             totalmaquina += valor;
             actualizarTotalModal();
-        })
-        .catch((err) => {
-            console.error("Error guardando " + tipo + ":", err);
-        });
+        },
+        error: function () {
+            console.error("Error guardando " + tipo);
+        }
+    });
+}
+
+function calcularCambio(totalDevolver, monedasDisponibles) {
+    var cambio = [];
+    var restante = totalDevolver;
+    
+    // Ordenar monedas de mayor a menor valor
+    var monedasOrdenadas = monedasDisponibles.slice();
+    monedasOrdenadas.sort(function(a, b) {
+        return b.valor - a.valor;
+    });
+    
+    // Calcular qué monedas devolver
+    for (var i = 0; i < monedasOrdenadas.length; i++) {
+        var moneda = monedasOrdenadas[i];
+        if (moneda.cantidad > 0 && restante >= moneda.valor) {
+            var cantidadUsar = Math.floor(restante / moneda.valor);
+            if (cantidadUsar > moneda.cantidad) {
+                cantidadUsar = moneda.cantidad;
+            }
+            
+            if (cantidadUsar > 0) {
+                cambio.push({
+                    valor: moneda.valor,
+                    cantidad: cantidadUsar
+                });
+                restante = restante - (cantidadUsar * moneda.valor);
+                restante = Math.round(restante * 100) / 100; // Redondear para evitar errores de precisión
+            }
+        }
+    }
+    
+    return cambio;
+}
+
+function formatearMensajeCambio(cambio) {
+    if (cambio.length === 0) {
+        return "Vuelta: 0€";
+    }
+    
+    var mensaje = "Vuelta: ";
+    var partes = [];
+    
+    for (var i = 0; i < cambio.length; i++) {
+        var valorTexto = cambio[i].valor.toString();
+        if (valorTexto.indexOf(".") !== -1) {
+            valorTexto = valorTexto.replace(".", ",");
+        }
+        var texto = valorTexto + " euro";
+        if (cambio[i].valor !== 1) {
+            texto = texto + "s";
+        }
+        texto = texto + ": " + cambio[i].cantidad;
+        partes.push(texto);
+    }
+    
+    mensaje = mensaje + partes.join(", ");
+    return mensaje;
+}
+
+function devolverMonedas(cambio) {
+    if (cambio.length === 0) {
+        return;
+    }
+    
+    for (var i = 0; i < cambio.length; i++) {
+        (function(moneda) {
+            $.ajax({
+                url: API_URL + "/maquina/monedas/actualizar",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ 
+                    valor: moneda.valor, 
+                    cantidad: -moneda.cantidad 
+                }),
+                success: function() {
+                    // Moneda devuelta correctamente
+                },
+                error: function() {
+                    console.error("Error actualizando moneda " + moneda.valor);
+                }
+            });
+        })(cambio[i]);
+    }
+}
+
+function comprarProducto() {
+    var codigo = $.trim($("#num").text());
+    var precio = precios[codigo];
+
+    if (!codigo || codigo === "PIDE" || typeof precio !== "number") {
+        mostrarMensaje("Introduce un código válido.");
+        return;
     }
 
-    async function comprarProducto() {
-        const codigo = display.textContent.trim();
-        const precio = precios[codigo];
+    $.get(API_URL + "/maquina/productos", function (productos) {
+        var producto = null;
+        for (var i = 0; i < productos.length; i++) {
+            if (productos[i].codigo === codigo) {
+                producto = productos[i];
+                break;
+            }
+        }
 
-        if (!codigo || codigo === "PIDE" || typeof precio !== "number") {
-            mostrarMensaje("Introduce un código válido.");
+        if (!producto || producto.cantidad <= 0) {
+            mostrarMensaje("Producto agotado.");
             return;
         }
 
-        try {
-            const resProductos = await fetch(API_URL + "/maquina/productos");
-            if (!resProductos.ok) {
-                throw new Error("No se pudieron leer productos");
-            }
-            const productos = await resProductos.json();
-            const producto = productos.find(p => p.codigo === codigo);
-
-            if (!producto || producto.cantidad <= 0) {
-                mostrarMensaje("Producto agotado.");
-                return;
-            }
-
-            if (totalmaquina < precio) {
-                const falta = (precio - totalmaquina).toFixed(2);
-                mostrarMensaje("Faltan " + falta + "€ para comprar.");
-                return;
-            }
-
-            const resActualizar = await fetch(API_URL + "/maquina/productos/actualizar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ codigo: codigo, cantidad: -1 })
-            });
-
-            if (!resActualizar.ok) {
-                throw new Error("No se pudo actualizar la máquina");
-            }
-
-            totalmaquina -= precio;
-            if (totalmaquina < 0) totalmaquina = 0;
-            actualizarTotalModal();
-            mostrarMensaje("Compra realizada con éxito.");
-        } catch (err) {
-            console.error("Error al comprar:", err);
-            mostrarMensaje("Error al comprar, inténtalo de nuevo.");
+        if (totalmaquina < precio) {
+            var falta = (precio - totalmaquina).toFixed(2);
+            mostrarMensaje("Faltan " + falta + "€ para comprar.");
+            return;
         }
-    }
 
-    // Event listeners para los botones de billetes y monedas del modal
-    document.querySelectorAll(".btn-billete-modal").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const valor = parseFloat(btn.getAttribute("data-valor"));
-            guardarDineroEnMaquina("billete", valor);
+        $.ajax({
+            url: API_URL + "/maquina/productos/actualizar",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ codigo: codigo, cantidad: -1 }),
+            success: function () {
+                totalmaquina -= precio;
+                if (totalmaquina < 0) {
+                    totalmaquina = 0;
+                }
+                actualizarTotalModal();
+                
+                // Obtener monedas disponibles y calcular cambio
+                $.get(API_URL + "/maquina/monedas", function (monedas) {
+                    var cambio = calcularCambio(totalmaquina, monedas);
+                    var mensaje = formatearMensajeCambio(cambio);
+                    mostrarMensaje(mensaje);
+                    
+                    // Devolver las monedas (restar de la máquina)
+                    devolverMonedas(cambio);
+                    
+                    // Resetear el total de la máquina después de devolver
+                    totalmaquina = 0;
+                    actualizarTotalModal();
+                }).fail(function() {
+                    mostrarMensaje("Total a devolver: " + totalmaquina.toFixed(2) + "€");
+                    totalmaquina = 0;
+                    actualizarTotalModal();
+                });
+                
+                actualizarFotosStock();
+            },
+            error: function () {
+                mostrarMensaje("Error al comprar, inténtalo de nuevo.");
+            }
         });
+    }).fail(function () {
+        mostrarMensaje("Error al comprar, inténtalo de nuevo.");
     });
+}
 
-    document.querySelectorAll(".btn-moneda-modal").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const valor = parseFloat(btn.getAttribute("data-valor"));
-            guardarDineroEnMaquina("moneda", valor);
-        });
-    });
 
-    // Actualizar el total cuando se abre el modal
-    const modalIngresar = document.getElementById("modalIngresar");
-    if (modalIngresar) {
-        modalIngresar.addEventListener("show.bs.modal", () => {
-            actualizarTotalModal();
-        });
-    }
-
-    const comprarBtn = document.querySelector(".btn-comprar");
-    if (comprarBtn) {
-        comprarBtn.addEventListener("click", comprarProducto);
-    }
-});
-
-// Función para actualizar el inventario del usuario
 function actualizarInventario() {
-    // Hacemos una petición GET a la API para obtener los productos del usuario
-    $.get(API_URL + "/usuario/productos", function(inventario) {
-        // Recorremos cada producto del inventario
-        inventario.forEach(function(producto) {
+    $.get(API_URL + "/usuario/productos", function (inventario) {
+        for (var i = 0; i < inventario.length; i++) {
+            var producto = inventario[i];
             if (producto.codigo === "00") {
                 $("#num-cajas1").text(producto.cantidad);
             } else if (producto.codigo === "01") {
@@ -177,21 +250,84 @@ function actualizarInventario() {
             } else if (producto.codigo === "03") {
                 $("#num-cajas4").text(producto.cantidad);
             }
-        });
-    }).fail(function() {
+        }
+    }).fail(function () {
         console.error("Error al cargar el inventario");
     });
 }
 
 function actualizarDinero() {
-    $.get(API_URL + "/usuario", function(usuario) {
+    $.get(API_URL + "/usuario", function (usuario) {
         $("#dinero-usuario").text(usuario.dinero + "€");
-    }).fail(function() {
+    }).fail(function () {
         console.error("Error al cargar el dinero del usuario");
     });
 }
 
-$(document).ready(function() {
+
+$(document).ready(function () {
+    var $display = $("#num");
+
+    function agregar(valor) {
+        var texto = $display.text();
+
+        if (texto === "PIDE") {
+            texto = "";
+        }
+        if (texto.length >= 2) {
+            return;
+        }
+        texto = texto + valor;
+        $display.text(texto);
+    }
+
+    $(".btn-num").each(function () {
+        var id = this.id;
+        if (id === "num-limpiar" || id === "num-borrar") {
+            return;
+        }
+        $(this).on("click", function () {
+            var valor = $.trim($(this).text());
+            agregar(valor);
+        });
+    });
+
+    $("#num-limpiar").on("click", function () {
+        $display.text("");
+    });
+
+    $("#num-borrar").on("click", function () {
+        var texto = $display.text();
+        texto = texto.slice(0, -1);
+        if (texto === "") {
+            texto = "PIDE";
+        }
+        $display.text(texto);
+    });
+
+    $(".btn-candado").on("click", function () {
+        window.location.href = "./maquina/maquina.html";
+    });
+
+    $(".btn-billete-modal").on("click", function () {
+        var valor = parseFloat($(this).attr("data-valor"));
+        guardarDineroMaquina("billete", valor);
+    });
+
+    $(".btn-moneda-modal").on("click", function () {
+        var valor = parseFloat($(this).attr("data-valor"));
+        guardarDineroMaquina("moneda", valor);
+    });
+
+    $("#modalIngresar").on("show.bs.modal", function () {
+        actualizarTotalModal();
+    });
+
+    $(".btn-comprar").on("click", function () {
+        comprarProducto();
+    });
+
+    actualizarFotosStock();
     actualizarInventario();
     actualizarDinero();
 });

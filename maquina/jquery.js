@@ -1,468 +1,405 @@
 var API_BASE = "http://localhost:3000";
 
-document.addEventListener("DOMContentLoaded", function () {
+$(document).ready(function () {
     cargarProductos();
     cargarMonedas();
     cargarBilletes();
+
+    $(document).on("click", ".btn-sumar-producto", function () {
+        var codigo = $(this).attr("data-codigo");
+        sumarProducto(codigo);
+    });
+
+    $(document).on("click", ".btn-restar-producto", function () {
+        var codigo = $(this).attr("data-codigo");
+        restarProducto(codigo);
+    });
+
+    $(document).on("click", ".btn-sumar-moneda", function () {
+        var valor = parseFloat($(this).attr("data-valor"));
+        sumarMoneda(valor);
+    });
+
+    $(document).on("click", ".btn-restar-moneda", function () {
+        var valor = parseFloat($(this).attr("data-valor"));
+        restarMoneda(valor);
+    });
+
+    $(document).on("click", ".btn-sumar-billete", function () {
+        var valor = parseFloat($(this).attr("data-valor"));
+        sumarBillete(valor);
+    });
+
+    $(document).on("click", ".btn-restar-billete", function () {
+        var valor = parseFloat($(this).attr("data-valor"));
+        restarBillete(valor);
+    });
 });
 
+
 function cargarProductos() {
-    fetch(API_BASE + "/maquina/productos")
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .then(function (datos) {
-            var tbody = document.getElementById("tabla-productos");
-            tbody.innerHTML = "";
+    $.get(API_BASE + "/maquina/productos", function (datos) {
+        var tbody = document.getElementById("tabla-productos");
+        tbody.innerHTML = "";
 
-            if (!datos || datos.length === 0) {
-                var filaVacia = document.createElement("tr");
-                var celda = document.createElement("td");
-                celda.colSpan = 3;
-                celda.textContent = "No hay productos en la máquina.";
-                filaVacia.appendChild(celda);
-                tbody.appendChild(filaVacia);
-                return;
-            }
+        if (!datos || datos.length === 0) {
+            var filaVacia = document.createElement("tr");
+            var celda = document.createElement("td");
+            celda.colSpan = 3;
+            celda.textContent = "no hay productos";
+            filaVacia.appendChild(celda);
+            tbody.appendChild(filaVacia);
+            return;
+        }
 
-            for (var i = 0; i < datos.length; i++) {
-                var producto = datos[i];
+        for (var i = 0; i < datos.length; i++) {
+            var producto = datos[i];
 
-                var fila = document.createElement("tr");
+            var fila = document.createElement("tr");
 
-                var tdNombre = document.createElement("td");
-                tdNombre.textContent = producto.nombre;
+            var tdNombre = document.createElement("td");
+            tdNombre.textContent = producto.nombre;
 
-                var tdCantidad = document.createElement("td");
-                
-                // Crear contenedor para cantidad y botones
-                var contenedorCantidad = document.createElement("div");
-                contenedorCantidad.style.display = "flex";
-                contenedorCantidad.style.alignItems = "center";
-                contenedorCantidad.style.justifyContent = "center";
-                contenedorCantidad.style.gap = "10px";
+            var tdCantidad = document.createElement("td");
 
-                // Botón de restar
-                var botonRestar = document.createElement("button");
-                botonRestar.className = "btn btn-sm btn-outline-light";
-                botonRestar.innerHTML = '<i class="bi bi-dash"></i>';
-                botonRestar.onclick = function(codigo) {
-                    return function() {
-                        restarProducto(codigo);
-                    };
-                }(producto.codigo);
+            var contenedorCantidad = document.createElement("div");
+            contenedorCantidad.style.display = "flex";
+            contenedorCantidad.style.alignItems = "center";
+            contenedorCantidad.style.justifyContent = "center";
+            contenedorCantidad.style.gap = "10px";
 
-                // Mostrar cantidad
-                var spanCantidad = document.createElement("span");
-                spanCantidad.id = "cantidad-" + producto.codigo;
-                spanCantidad.textContent = producto.cantidad;
-                spanCantidad.style.minWidth = "30px";
-                spanCantidad.style.textAlign = "center";
+            var botonRestar = document.createElement("button");
+            botonRestar.type = "button";
+            botonRestar.className = "btn btn-sm btn-outline-light btn-restar-producto";
+            botonRestar.setAttribute("data-codigo", producto.codigo);
+            botonRestar.innerHTML = '<i class="bi bi-dash"></i>';
 
-                // Botón de sumar
-                var botonSumar = document.createElement("button");
-                botonSumar.className = "btn btn-sm btn-outline-light";
-                botonSumar.innerHTML = '<i class="bi bi-plus"></i>';
-                botonSumar.onclick = function(codigo) {
-                    return function() {
-                        sumarProducto(codigo);
-                    };
-                }(producto.codigo);
+            var spanCantidad = document.createElement("span");
+            spanCantidad.id = "cantidad-" + producto.codigo;
+            spanCantidad.textContent = producto.cantidad;
+            spanCantidad.style.minWidth = "30px";
+            spanCantidad.style.textAlign = "center";
 
-                // Añadir elementos al contenedor
-                contenedorCantidad.appendChild(botonRestar);
-                contenedorCantidad.appendChild(spanCantidad);
-                contenedorCantidad.appendChild(botonSumar);
+            var botonSumar = document.createElement("button");
+            botonSumar.type = "button";
+            botonSumar.className = "btn btn-sm btn-outline-light btn-sumar-producto";
+            botonSumar.setAttribute("data-codigo", producto.codigo);
+            botonSumar.innerHTML = '<i class="bi bi-plus"></i>';
 
-                tdCantidad.appendChild(contenedorCantidad);
+            contenedorCantidad.appendChild(botonRestar);
+            contenedorCantidad.appendChild(spanCantidad);
+            contenedorCantidad.appendChild(botonSumar);
 
-                fila.appendChild(tdNombre);
-                fila.appendChild(tdCantidad);
+            tdCantidad.appendChild(contenedorCantidad);
 
-                tbody.appendChild(fila);
-            }
-        })
-        .catch(function (error) {
-            console.error("Error cargando productos:", error);
-            var tbody = document.getElementById("tabla-productos");
-            tbody.innerHTML = "";
-            var filaErr = document.createElement("tr");
-            var celdaErr = document.createElement("td");
-            celdaErr.colSpan = 3;
-            celdaErr.textContent = "Error al cargar productos.";
-            filaErr.appendChild(celdaErr);
-            tbody.appendChild(filaErr);
-        });
+            fila.appendChild(tdNombre);
+            fila.appendChild(tdCantidad);
+
+            tbody.appendChild(fila);
+        }
+    }).fail(function () {
+        console.error("error");
+        var tbody = document.getElementById("tabla-productos");
+        tbody.innerHTML = "";
+        var filaErr = document.createElement("tr");
+        var celdaErr = document.createElement("td");
+        celdaErr.colSpan = 3;
+        celdaErr.textContent = "error en carga de productos";
+        filaErr.appendChild(celdaErr);
+        tbody.appendChild(filaErr);
+    });
 }
 
 function cargarMonedas() {
-    fetch(API_BASE + "/maquina/monedas")
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .then(function (datos) {
-            var tbody = document.getElementById("tabla-monedas");
-            tbody.innerHTML = "";
+    $.get(API_BASE + "/maquina/monedas", function (datos) {
+        var tbody = document.getElementById("tabla-monedas");
+        tbody.innerHTML = "";
 
-            if (!datos || datos.length === 0) {
-                var filaVacia = document.createElement("tr");
-                var celda = document.createElement("td");
-                celda.colSpan = 2;
-                celda.textContent = "No hay monedas en la máquina.";
-                filaVacia.appendChild(celda);
-                tbody.appendChild(filaVacia);
-                return;
-            }
+        if (!datos || datos.length === 0) {
+            var filaVacia = document.createElement("tr");
+            var celda = document.createElement("td");
+            celda.colSpan = 2;
+            celda.textContent = "no hay monedas";
+            filaVacia.appendChild(celda);
+            tbody.appendChild(filaVacia);
+            return;
+        }
 
-            for (var i = 0; i < datos.length; i++) {
-                var moneda = datos[i];
+        for (var i = 0; i < datos.length; i++) {
+            var moneda = datos[i];
 
-                var fila = document.createElement("tr");
+            var fila = document.createElement("tr");
 
-                var tdValor = document.createElement("td");
-                tdValor.textContent = moneda.valor + " €";
+            var tdValor = document.createElement("td");
+            tdValor.textContent = moneda.valor + " €";
 
-                var tdCantidad = document.createElement("td");
-                
-                // Crear contenedor para cantidad y botones
-                var contenedorCantidad = document.createElement("div");
-                contenedorCantidad.style.display = "flex";
-                contenedorCantidad.style.alignItems = "center";
-                contenedorCantidad.style.justifyContent = "center";
-                contenedorCantidad.style.gap = "10px";
+            var tdCantidad = document.createElement("td");
 
-                // Botón de restar
-                var botonRestar = document.createElement("button");
-                botonRestar.className = "btn btn-sm btn-outline-light";
-                botonRestar.innerHTML = '<i class="bi bi-dash"></i>';
-                botonRestar.onclick = function(valor) {
-                    return function() {
-                        restarMoneda(valor);
-                    };
-                }(moneda.valor);
+            var contenedorCantidad = document.createElement("div");
+            contenedorCantidad.style.display = "flex";
+            contenedorCantidad.style.alignItems = "center";
+            contenedorCantidad.style.justifyContent = "center";
+            contenedorCantidad.style.gap = "10px";
 
-                // Mostrar cantidad
-                var spanCantidad = document.createElement("span");
-                spanCantidad.id = "cantidad-moneda-" + moneda.valor;
-                spanCantidad.textContent = moneda.cantidad;
-                spanCantidad.style.minWidth = "30px";
-                spanCantidad.style.textAlign = "center";
+            var botonRestar = document.createElement("button");
+            botonRestar.type = "button";
+            botonRestar.className = "btn btn-sm btn-outline-light btn-restar-moneda";
+            botonRestar.setAttribute("data-valor", moneda.valor);
+            botonRestar.innerHTML = '<i class="bi bi-dash"></i>';
 
-                // Botón de sumar
-                var botonSumar = document.createElement("button");
-                botonSumar.className = "btn btn-sm btn-outline-light";
-                botonSumar.innerHTML = '<i class="bi bi-plus"></i>';
-                botonSumar.onclick = function(valor) {
-                    return function() {
-                        sumarMoneda(valor);
-                    };
-                }(moneda.valor);
+            var spanCantidad = document.createElement("span");
+            spanCantidad.id = "cantidad-moneda-" + moneda.valor;
+            spanCantidad.textContent = moneda.cantidad;
+            spanCantidad.style.minWidth = "30px";
+            spanCantidad.style.textAlign = "center";
 
-                // Añadir elementos al contenedor
-                contenedorCantidad.appendChild(botonRestar);
-                contenedorCantidad.appendChild(spanCantidad);
-                contenedorCantidad.appendChild(botonSumar);
+            var botonSumar = document.createElement("button");
+            botonSumar.type = "button";
+            botonSumar.className = "btn btn-sm btn-outline-light btn-sumar-moneda";
+            botonSumar.setAttribute("data-valor", moneda.valor);
+            botonSumar.innerHTML = '<i class="bi bi-plus"></i>';
 
-                tdCantidad.appendChild(contenedorCantidad);
+            contenedorCantidad.appendChild(botonRestar);
+            contenedorCantidad.appendChild(spanCantidad);
+            contenedorCantidad.appendChild(botonSumar);
 
-                fila.appendChild(tdValor);
-                fila.appendChild(tdCantidad);
+            tdCantidad.appendChild(contenedorCantidad);
 
-                tbody.appendChild(fila);
-            }
-        })
-        .catch(function (error) {
-            console.error("Error cargando monedas:", error);
-            var tbody = document.getElementById("tabla-monedas");
-            tbody.innerHTML = "";
-            var filaErr = document.createElement("tr");
-            var celdaErr = document.createElement("td");
-            celdaErr.colSpan = 2;
-            celdaErr.textContent = "Error al cargar monedas.";
-            filaErr.appendChild(celdaErr);
-            tbody.appendChild(filaErr);
-        });
+            fila.appendChild(tdValor);
+            fila.appendChild(tdCantidad);
+
+            tbody.appendChild(fila);
+        }
+    }).fail(function () {
+        console.error("Error cargando monedas");
+        var tbody = document.getElementById("tabla-monedas");
+        tbody.innerHTML = "";
+        var filaErr = document.createElement("tr");
+        var celdaErr = document.createElement("td");
+        celdaErr.colSpan = 2;
+        celdaErr.textContent = "error cargando mnedas";
+        filaErr.appendChild(celdaErr);
+        tbody.appendChild(filaErr);
+    });
 }
 
 function cargarBilletes() {
-    fetch(API_BASE + "/maquina/billetes")
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .then(function (datos) {
-            var tbody = document.getElementById("tabla-billetes");
-            tbody.innerHTML = "";
+    $.get(API_BASE + "/maquina/billetes", function (datos) {
+        var tbody = document.getElementById("tabla-billetes");
+        tbody.innerHTML = "";
 
-            if (!datos || datos.length === 0) {
-                var filaVacia = document.createElement("tr");
-                var celda = document.createElement("td");
-                celda.colSpan = 2;
-                celda.textContent = "No hay billetes en la máquina.";
-                filaVacia.appendChild(celda);
-                tbody.appendChild(filaVacia);
-                return;
-            }
+        if (!datos || datos.length === 0) {
+            var filaVacia = document.createElement("tr");
+            var celda = document.createElement("td");
+            celda.colSpan = 2;
+            celda.textContent = "sin billetes";
+            filaVacia.appendChild(celda);
+            tbody.appendChild(filaVacia);
+            return;
+        }
 
-            for (var i = 0; i < datos.length; i++) {
-                var billete = datos[i];
+        for (var i = 0; i < datos.length; i++) {
+            var billete = datos[i];
 
-                var fila = document.createElement("tr");
+            var fila = document.createElement("tr");
 
-                var tdValor = document.createElement("td");
-                tdValor.textContent = billete.valor + " €";
+            var tdValor = document.createElement("td");
+            tdValor.textContent = billete.valor + " €";
 
-                var tdCantidad = document.createElement("td");
-                
-                // Crear contenedor para cantidad y botones
-                var contenedorCantidad = document.createElement("div");
-                contenedorCantidad.style.display = "flex";
-                contenedorCantidad.style.alignItems = "center";
-                contenedorCantidad.style.justifyContent = "center";
-                contenedorCantidad.style.gap = "10px";
+            var tdCantidad = document.createElement("td");
 
-                // Botón de restar
-                var botonRestar = document.createElement("button");
-                botonRestar.className = "btn btn-sm btn-outline-light";
-                botonRestar.innerHTML = '<i class="bi bi-dash"></i>';
-                botonRestar.onclick = function(valor) {
-                    return function() {
-                        restarBillete(valor);
-                    };
-                }(billete.valor);
+            var contenedorCantidad = document.createElement("div");
+            contenedorCantidad.style.display = "flex";
+            contenedorCantidad.style.alignItems = "center";
+            contenedorCantidad.style.justifyContent = "center";
+            contenedorCantidad.style.gap = "10px";
 
-                // Mostrar cantidad
-                var spanCantidad = document.createElement("span");
-                spanCantidad.id = "cantidad-billete-" + billete.valor;
-                spanCantidad.textContent = billete.cantidad;
-                spanCantidad.style.minWidth = "30px";
-                spanCantidad.style.textAlign = "center";
+            var botonRestar = document.createElement("button");
+            botonRestar.type = "button";
+            botonRestar.className = "btn btn-sm btn-outline-light btn-restar-billete";
+            botonRestar.setAttribute("data-valor", billete.valor);
+            botonRestar.innerHTML = '<i class="bi bi-dash"></i>';
 
-                // Botón de sumar (deshabilitado para billetes)
-                var botonSumar = document.createElement("button");
-                botonSumar.className = "btn btn-sm btn-outline-light";
-                botonSumar.innerHTML = '<i class="bi bi-plus"></i>';
-                botonSumar.disabled = true;
+            var spanCantidad = document.createElement("span");
+            spanCantidad.id = "cantidad-billete-" + billete.valor;
+            spanCantidad.textContent = billete.cantidad;
+            spanCantidad.style.minWidth = "30px";
+            spanCantidad.style.textAlign = "center";
 
-                // Añadir elementos al contenedor
-                contenedorCantidad.appendChild(botonRestar);
-                contenedorCantidad.appendChild(spanCantidad);
-                contenedorCantidad.appendChild(botonSumar);
+            var botonSumar = document.createElement("button");
+            botonSumar.type = "button";
+            botonSumar.className = "btn btn-sm btn-outline-light btn-sumar-billete";
+            botonSumar.setAttribute("data-valor", billete.valor);
+            botonSumar.innerHTML = '<i class="bi bi-plus"></i>';
+            botonSumar.disabled = true; 
 
-                tdCantidad.appendChild(contenedorCantidad);
+            contenedorCantidad.appendChild(botonRestar);
+            contenedorCantidad.appendChild(spanCantidad);
+            contenedorCantidad.appendChild(botonSumar);
 
-                fila.appendChild(tdValor);
-                fila.appendChild(tdCantidad);
+            tdCantidad.appendChild(contenedorCantidad);
 
-                tbody.appendChild(fila);
-            }
-        })
-        .catch(function (error) {
-            console.error("Error cargando billetes:", error);
-            var tbody = document.getElementById("tabla-billetes");
-            tbody.innerHTML = "";
-            var filaErr = document.createElement("tr");
-            var celdaErr = document.createElement("td");
-            celdaErr.colSpan = 2;
-            celdaErr.textContent = "Error al cargar billetes.";
-            filaErr.appendChild(celdaErr);
-            tbody.appendChild(filaErr);
-        });
+            fila.appendChild(tdValor);
+            fila.appendChild(tdCantidad);
+
+            tbody.appendChild(fila);
+        }
+    }).fail(function () {
+        console.error("Error cargando billetes");
+        var tbody = document.getElementById("tabla-billetes");
+        tbody.innerHTML = "";
+        var filaErr = document.createElement("tr");
+        var celdaErr = document.createElement("td");
+        celdaErr.colSpan = 2;
+        celdaErr.textContent = "error cargando billetes";
+        filaErr.appendChild(celdaErr);
+        tbody.appendChild(filaErr);
+    });
 }
 
-// Función para sumar 1 a la cantidad de un producto
+
 function sumarProducto(codigo) {
-    fetch(API_BASE + "/maquina/productos/actualizar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            codigo: codigo,
-            cantidad: 1
-        })
-    })
-    .then(function(respuesta) {
-        return respuesta.json();
-    })
-    .then(function(datos) {
-        if (datos.ok) {
-            // Actualizar la cantidad mostrada en la tabla
-            var spanCantidad = document.getElementById("cantidad-" + codigo);
-            if (spanCantidad) {
-                spanCantidad.textContent = datos.producto.cantidad;
+    $.ajax({
+        url: API_BASE + "/maquina/productos/actualizar",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ codigo: codigo, cantidad: 1 }),
+        success: function (datos) {
+            if (datos.ok) {
+                var span = document.getElementById("cantidad-" + codigo);
+                if (span) {
+                    span.textContent = datos.producto.cantidad;
+                }
+            } else {
+                console.error("error al sumar", datos.error);
+                alert("error: " + datos.error);
             }
-        } else {
-            console.error("Error al sumar producto:", datos.error);
-            alert("Error al sumar producto: " + datos.error);
+        },
+        error: function () {
+            console.error("error de peticion");
+            alert("error conectar con el servidor");
         }
-    })
-    .catch(function(error) {
-        console.error("Error en la petición:", error);
-        alert("Error al conectar con el servidor");
     });
 }
 
-// Función para restar 1 a la cantidad de un producto
 function restarProducto(codigo) {
-    fetch(API_BASE + "/maquina/productos/actualizar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            codigo: codigo,
-            cantidad: -1
-        })
-    })
-    .then(function(respuesta) {
-        return respuesta.json();
-    })
-    .then(function(datos) {
-        if (datos.ok) {
-            // Actualizar la cantidad mostrada en la tabla
-            var spanCantidad = document.getElementById("cantidad-" + codigo);
-            if (spanCantidad) {
-                spanCantidad.textContent = datos.producto.cantidad;
+    $.ajax({
+        url: API_BASE + "/maquina/productos/actualizar",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ codigo: codigo, cantidad: -1 }),
+        success: function (datos) {
+            if (datos.ok) {
+                var span = document.getElementById("cantidad-" + codigo);
+                if (span) {
+                    span.textContent = datos.producto.cantidad;
+                }
+            } else {
+                console.error("error al restar", datos.error);
+                alert("Error:" + datos.error);
             }
-        } else {
-            console.error("Error al restar producto:", datos.error);
-            alert("Error al restar producto: " + datos.error);
+        },
+        error: function () {
+            console.error("Error en la petición");
+            alert("Error al conectar con el servidor");
         }
-    })
-    .catch(function(error) {
-        console.error("Error en la petición:", error);
-        alert("Error al conectar con el servidor");
     });
 }
 
-// Función para sumar 1 a la cantidad de una moneda
+//monedas
 function sumarMoneda(valor) {
-    fetch(API_BASE + "/maquina/monedas/actualizar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            valor: valor,
-            cantidad: 1
-        })
-    })
-    .then(function(respuesta) {
-        return respuesta.json();
-    })
-    .then(function(datos) {
-        if (datos.ok) {
-            // Actualizar la cantidad mostrada en la tabla
-            var spanCantidad = document.getElementById("cantidad-moneda-" + valor);
-            if (spanCantidad) {
-                spanCantidad.textContent = datos.moneda.cantidad;
+    $.ajax({
+        url: API_BASE + "/maquina/monedas/actualizar",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ valor: valor, cantidad: 1 }),
+        success: function (datos) {
+            if (datos.ok) {
+                var span = document.getElementById("cantidad-moneda-" + valor);
+                if (span) {
+                    span.textContent = datos.moneda.cantidad;
+                }
+            } else {
+                console.error("Error al sumar moneda:", datos.error);
+                alert("Error al sumar moneda: " + datos.error);
             }
-        } else {
-            console.error("Error al sumar moneda:", datos.error);
-            alert("Error al sumar moneda: " + datos.error);
+        },
+        error: function () {
+            console.error("Error en la petición");
+            alert("Error al conectar con el servidor");
         }
-    })
-    .catch(function(error) {
-        console.error("Error en la petición:", error);
-        alert("Error al conectar con el servidor");
     });
 }
 
-// Función para restar 1 a la cantidad de una moneda
 function restarMoneda(valor) {
-    fetch(API_BASE + "/maquina/monedas/actualizar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            valor: valor,
-            cantidad: -1
-        })
-    })
-    .then(function(respuesta) {
-        return respuesta.json();
-    })
-    .then(function(datos) {
-        if (datos.ok) {
-            // Actualizar la cantidad mostrada en la tabla
-            var spanCantidad = document.getElementById("cantidad-moneda-" + valor);
-            if (spanCantidad) {
-                spanCantidad.textContent = datos.moneda.cantidad;
+    $.ajax({
+        url: API_BASE + "/maquina/monedas/actualizar",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ valor: valor, cantidad: -1 }),
+        success: function (datos) {
+            if (datos.ok) {
+                var span = document.getElementById("cantidad-moneda-" + valor);
+                if (span) {
+                    span.textContent = datos.moneda.cantidad;
+                }
+            } else {
+                console.error("Error al restar moneda:", datos.error);
+                alert("Error al restar moneda: " + datos.error);
             }
-        } else {
-            console.error("Error al restar moneda:", datos.error);
-            alert("Error al restar moneda: " + datos.error);
+        },
+        error: function () {
+            console.error("Error en la petición");
+            alert("Error al conectar con el servidor");
         }
-    })
-    .catch(function(error) {
-        console.error("Error en la petición:", error);
-        alert("Error al conectar con el servidor");
     });
 }
 
-// Función para sumar 1 a la cantidad de un billete
+//billetes
 function sumarBillete(valor) {
-    fetch(API_BASE + "/maquina/billetes/actualizar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            valor: valor,
-            cantidad: 1
-        })
-    })
-    .then(function(respuesta) {
-        return respuesta.json();
-    })
-    .then(function(datos) {
-        if (datos.ok) {
-            // Actualizar la cantidad mostrada en la tabla
-            var spanCantidad = document.getElementById("cantidad-billete-" + valor);
-            if (spanCantidad) {
-                spanCantidad.textContent = datos.billete.cantidad;
+    $.ajax({
+        url: API_BASE + "/maquina/billetes/actualizar",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ valor: valor, cantidad: 1 }),
+        success: function (datos) {
+            if (datos.ok) {
+                var span = document.getElementById("cantidad-billete-" + valor);
+                if (span) {
+                    span.textContent = datos.billete.cantidad;
+                }
+            } else {
+                console.error("Error al sumar billete:", datos.error);
+                alert("Error al sumar billete: " + datos.error);
             }
-        } else {
-            console.error("Error al sumar billete:", datos.error);
-            alert("Error al sumar billete: " + datos.error);
+        },
+        error: function () {
+            console.error("Error en la petición");
+            alert("Error al conectar con el servidor");
         }
-    })
-    .catch(function(error) {
-        console.error("Error en la petición:", error);
-        alert("Error al conectar con el servidor");
     });
 }
 
-// Función para restar 1 a la cantidad de un billete
 function restarBillete(valor) {
-    fetch(API_BASE + "/maquina/billetes/actualizar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            valor: valor,
-            cantidad: -1
-        })
-    })
-    .then(function(respuesta) {
-        return respuesta.json();
-    })
-    .then(function(datos) {
-        if (datos.ok) {
-            // Actualizar la cantidad mostrada en la tabla
-            var spanCantidad = document.getElementById("cantidad-billete-" + valor);
-            if (spanCantidad) {
-                spanCantidad.textContent = datos.billete.cantidad;
+    $.ajax({
+        url: API_BASE + "/maquina/billetes/actualizar",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ valor: valor, cantidad: -1 }),
+        success: function (datos) {
+            if (datos.ok) {
+                var span = document.getElementById("cantidad-billete-" + valor);
+                if (span) {
+                    span.textContent = datos.billete.cantidad;
+                }
+            } else {
+                console.error("Error al restar billete:", datos.error);
+                alert("Error al restar billete: " + datos.error);
             }
-        } else {
-            console.error("Error al restar billete:", datos.error);
-            alert("Error al restar billete: " + datos.error);
+        },
+        error: function () {
+            console.error("Error en la petición");
+            alert("Error al conectar con el servidor");
         }
-    })
-    .catch(function(error) {
-        console.error("Error en la petición:", error);
-        alert("Error al conectar con el servidor");
     });
 }
