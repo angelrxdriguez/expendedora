@@ -107,7 +107,7 @@ function calcularCambio(totalDevolver, monedasDisponibles) {
                     cantidad: cantidadUsar
                 });
                 restante = restante - (cantidadUsar * moneda.valor);
-                restante = Math.round(restante * 100) / 100; // Redondear para evitar errores de precisión
+                restante = Math.round(restante * 100) / 100;  //redondear por el bug
             }
         }
     }
@@ -115,7 +115,7 @@ function calcularCambio(totalDevolver, monedasDisponibles) {
     return cambio;
 }
 
-function formatearMensajeCambio(cambio) {
+function mensajeCambio(cambio) {
     if (cambio.length === 0) {
         return "Vuelta: 0€";
     }
@@ -156,8 +156,7 @@ function devolverMonedas(cambio) {
                     cantidad: -moneda.cantidad 
                 }),
                 success: function() {
-                    // Moneda devuelta correctamente
-                },
+                    },
                 error: function() {
                     console.error("Error actualizando moneda " + moneda.valor);
                 }
@@ -207,16 +206,13 @@ function comprarProducto() {
                 }
                 actualizarTotalModal();
                 
-                // Obtener monedas disponibles y calcular cambio
                 $.get(API_URL + "/maquina/monedas", function (monedas) {
                     var cambio = calcularCambio(totalmaquina, monedas);
-                    var mensaje = formatearMensajeCambio(cambio);
+                    var mensaje = mensajeCambio(cambio);
                     mostrarMensaje(mensaje);
                     
-                    // Devolver las monedas (restar de la máquina)
                     devolverMonedas(cambio);
                     
-                    // Resetear el total de la máquina después de devolver
                     totalmaquina = 0;
                     actualizarTotalModal();
                 }).fail(function() {
